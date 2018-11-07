@@ -1,0 +1,32 @@
+#!/bin/bash
+comprobarID=1
+
+if [ $comprobarID -eq 1 ]
+then
+        uid=2000
+        gid=2000
+        comprobarID=0
+fi
+
+echo > usuarios.ldif
+for i in {1..14}
+do
+        echo "dn: uid=$(cat usuarios.csv | head -$i | tail -1 | cut -d ":" -f 4),ou=People,dc=gonzalonazareno,dc=org">>usuarios.ldif
+        echo "objectClass: top">>usuarios.ldif
+        echo "objectClass: posixAccount">>usuarios.ldif
+        echo "objectClass: inetOrgPerson">>usuarios.ldif
+        echo "objectClass: person">>usuarios.ldif
+        echo "objectClass: ldapPublicKey">>usuarios.ldif
+        echo "cn: $(cat usuarios.csv | head -$i | tail -1 | cut -d ":" -f 1)">>usuarios.ldif
+        echo "uid: $(cat usuarios.csv | head -$i | tail -1 | cut -d ":" -f 4)">>usuarios.ldif
+        echo "homeDirectory: /home/$(cat usuarios.csv | head -$i | tail -1 | cut -d ":" -f 4)">>usuarios.ldif
+        echo "uidNumber: $uid">>usuarios.ldif
+        echo "gidNumber: $gid">>usuarios.ldif
+        echo "loginShell: /bin/bash">>usuarios.ldif
+        echo "sn: $(cat usuarios.csv | head -$i | tail -1 | cut -d ":" -f 2)">>usuarios.ldif
+        echo "mail: $(cat usuarios.csv | head -$i | tail -1 | cut -d ":" -f 3)">>usuarios.ldif
+        echo -e "sshPublicKey: $(cat usuarios.csv | head -$i | tail -1 | cut -d ":" -f 5)\n">>usuarios.ldif
+        uid=$(($uid + 1))
+        gid=$(($gid + 1))
+done
+
