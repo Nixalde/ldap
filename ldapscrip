@@ -1,6 +1,10 @@
 #!/bin/bash
+
+#Variable para que los uid no se repitan
 comprobarID=1
 
+#Comprobación para que no inicie de nuevo las variables al valor por defecto
+# si se ejecuta de nuevo en la misma maquina.
 if [ $comprobarID -eq 1 ]
 then
         uid=2000
@@ -8,7 +12,9 @@ then
         comprobarID=0
 fi
 
+#Limpiamos el fichero de inserción de usuarios
 echo > usuarios.ldif
+#Añadimos los parámetros
 for i in {1..14}
 do
         echo "dn: uid=$(cat usuarios.csv | head -$i | tail -1 | cut -d ":" -f 4),ou=People,dc=gonzalonazareno,dc=org">>usuarios.ldif
@@ -27,6 +33,8 @@ do
         echo "mail: $(cat usuarios.csv | head -$i | tail -1 | cut -d ":" -f 3)">>usuarios.ldif
         echo -e "sshPublicKey: $(cat usuarios.csv | head -$i | tail -1 | cut -d ":" -f 5)\n">>usuarios.ldif
         uid=$(($uid + 1))
-        gid=$(($gid + 1))
 done
 
+#Se añaden los usuarios insertados en el fichero al arbol de ldap
+#que especifiquemos
+ldapadd -f usuarios.ldif -x -D "cn=admin,dc=gonzalonazareno,dc=org" -W
