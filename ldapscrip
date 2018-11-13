@@ -15,25 +15,25 @@ fi
 #Limpiamos el fichero de inserción de usuarios
 echo > usuarios.ldif
 #Añadimos los parámetros
-for i in {1..14}
+while IFS=: read -r cn sn mail usuario sshPublicKey
 do
-        echo "dn: uid=$(cat usuarios.csv | head -$i | tail -1 | cut -d ":" -f 4),ou=People,dc=gonzalonazareno,dc=org">>usuarios.ldif
+        echo "dn: uid=$usuario,ou=People,dc=gonzalonazareno,dc=org">>usuarios.ldif
         echo "objectClass: top">>usuarios.ldif
         echo "objectClass: posixAccount">>usuarios.ldif
         echo "objectClass: inetOrgPerson">>usuarios.ldif
         echo "objectClass: person">>usuarios.ldif
         echo "objectClass: ldapPublicKey">>usuarios.ldif
-        echo "cn: $(cat usuarios.csv | head -$i | tail -1 | cut -d ":" -f 1)">>usuarios.ldif
-        echo "uid: $(cat usuarios.csv | head -$i | tail -1 | cut -d ":" -f 4)">>usuarios.ldif
-        echo "homeDirectory: /home/$(cat usuarios.csv | head -$i | tail -1 | cut -d ":" -f 4)">>usuarios.ldif
+        echo "cn: $cn">>usuarios.ldif
+        echo "uid: $usuario">>usuarios.ldif
+        echo "homeDirectory: /home/$usuario">>usuarios.ldif
         echo "uidNumber: $uid">>usuarios.ldif
         echo "gidNumber: $gid">>usuarios.ldif
         echo "loginShell: /bin/bash">>usuarios.ldif
-        echo "sn: $(cat usuarios.csv | head -$i | tail -1 | cut -d ":" -f 2)">>usuarios.ldif
-        echo "mail: $(cat usuarios.csv | head -$i | tail -1 | cut -d ":" -f 3)">>usuarios.ldif
-        echo -e "sshPublicKey: $(cat usuarios.csv | head -$i | tail -1 | cut -d ":" -f 5)\n">>usuarios.ldif
+        echo "sn: $sn">>usuarios.ldif
+        echo "mail: $mail">>usuarios.ldif
+        echo -e "sshPublicKey: $sshPublicKey\n">>usuarios.ldif
         uid=$(($uid + 1))
-done
+done < usuarios.csv
 
 #Se añaden los usuarios insertados en el fichero al arbol de ldap
 #que especifiquemos
