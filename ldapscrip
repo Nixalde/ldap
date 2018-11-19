@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #Variable para que los uid no se repitan
 comprobarID=$(($comprobarID + 1))
